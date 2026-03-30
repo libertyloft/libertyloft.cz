@@ -97,7 +97,10 @@ const Events = () => {
 
     const fetchEvents = async () => {
       try {
-        const response = await fetch('/api/calendar', {
+        // Fallback for production: if the backend is not on the same domain,
+        // use an absolute URL (e.g. set VITE_API_URL in GitHub Secrets)
+        const apiBase = import.meta.env.VITE_API_URL || '/api';
+        const response = await fetch(`${apiBase}/calendar`, {
           signal: controller.signal,
         });
 
