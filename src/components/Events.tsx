@@ -70,7 +70,7 @@ const Events = () => {
 
     const fetchEvents = async () => {
       try {
-        const fetchUrl = `https://corsproxy.io/?${encodeURIComponent(calendarIcsUrl)}`;
+        const fetchUrl = `https://api.cors.lol/?url=${encodeURIComponent(calendarIcsUrl)}`;
         const response = await fetch(fetchUrl, {
           signal: controller.signal,
         });
@@ -81,12 +81,12 @@ const Events = () => {
 
         const text = await response.text();
         const parsedEvents = parseICS(text);
-        
+
         const now = Date.now();
         const upcomingEvents = parsedEvents
           .map((event) => ({
-             ...event,
-             date: new Date(event.date),
+            ...event,
+            date: new Date(event.date),
           }))
           .filter((event) => !Number.isNaN(event.date.getTime()) && event.date.getTime() >= now)
           .sort((a, b) => a.date.getTime() - b.date.getTime())
@@ -215,89 +215,88 @@ const Events = () => {
               return (
                 <article
                   key={event.id}
-                  className={`relative group p-6 border border-border rounded hover:border-ghost transition-all duration-300 hover-lift ${
-                    openCalendarMenuId === event.id ? 'z-40' : 'z-10'
-                  }`}
+                  className={`relative group p-6 border border-border rounded hover:border-ghost transition-all duration-300 hover-lift ${openCalendarMenuId === event.id ? 'z-40' : 'z-10'
+                    }`}
                 >
-                <div className="flex flex-col md:flex-row md:items-start gap-4">
-                  <div className="flex-shrink-0 md:w-32 md:text-right">
-                    <div className="flex items-center gap-2 md:justify-end text-ghost-bright text-sm">
-                      <Calendar size={14} />
-                      <span>{formatDate(event.date).split(',')[0]}</span>
-                    </div>
-                    <div className="text-lg font-display font-medium mt-1">
-                      {formatDate(event.date).split(',').slice(1).join(',')}
-                    </div>
-                    <div className="flex items-center gap-2 md:justify-end text-muted-foreground text-sm mt-1">
-                      <Clock size={12} />
-                      <span>{formatTime(event)}</span>
-                    </div>
-                    <a
-                      href={getLocationMapUrl(eventLocation)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={eventLocation || defaultLocationLabel}
-                      className="mt-1 inline-flex items-center gap-1.5 text-xs text-ghost-bright hover:text-foreground transition-colors md:justify-end"
-                    >
-                      <MapPin size={11} />
-                      <span>{t('events.mapLink')}</span>
-                    </a>
-                  </div>
-
-                  <div className="hidden md:block w-px bg-border group-hover:bg-ghost transition-colors self-stretch" />
-
-                  <div className="flex-1">
-                    <h3 className="text-xl font-display font-medium mb-2 group-hover:text-ghost-bright transition-colors">
-                      {event.title}
-                    </h3>
-                    {event.description && (
-                      <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
-                        {event.description}
-                      </p>
-                    )}
-                    <div className="relative mt-4 inline-block text-left" data-calendar-menu>
-                      <button
-                        type="button"
-                        className="inline-flex items-center gap-2 rounded-md border border-border/80 bg-card px-3 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-ghost hover:bg-muted/40"
-                        onClick={() =>
-                          setOpenCalendarMenuId((current) => (current === event.id ? null : event.id))
-                        }
-                        aria-haspopup="menu"
-                        aria-controls={`calendar-menu-${event.id}`}
-                        aria-expanded={openCalendarMenuId === event.id}
+                  <div className="flex flex-col md:flex-row md:items-start gap-4">
+                    <div className="flex-shrink-0 md:w-32 md:text-right">
+                      <div className="flex items-center gap-2 md:justify-end text-ghost-bright text-sm">
+                        <Calendar size={14} />
+                        <span>{formatDate(event.date).split(',')[0]}</span>
+                      </div>
+                      <div className="text-lg font-display font-medium mt-1">
+                        {formatDate(event.date).split(',').slice(1).join(',')}
+                      </div>
+                      <div className="flex items-center gap-2 md:justify-end text-muted-foreground text-sm mt-1">
+                        <Clock size={12} />
+                        <span>{formatTime(event)}</span>
+                      </div>
+                      <a
+                        href={getLocationMapUrl(eventLocation)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={eventLocation || defaultLocationLabel}
+                        className="mt-1 inline-flex items-center gap-1.5 text-xs text-ghost-bright hover:text-foreground transition-colors md:justify-end"
                       >
-                        <CalendarPlus size={14} />
-                        {t('events.addToCalendar')}
-                      </button>
+                        <MapPin size={11} />
+                        <span>{t('events.mapLink')}</span>
+                      </a>
+                    </div>
 
-                      {openCalendarMenuId === event.id && (
-                        <div
-                          id={`calendar-menu-${event.id}`}
-                          className="absolute left-0 top-full z-20 mt-2 min-w-56 max-w-[calc(100vw-2rem)] rounded-lg border border-border/80 bg-background/95 p-1.5 shadow-xl backdrop-blur"
-                        >
-                          <a
-                            href={getAddToCalendarUrl(event)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/70"
-                            onClick={() => setOpenCalendarMenuId(null)}
-                          >
-                            {t('events.addSingleEvent')}
-                          </a>
-                          <a
-                            href={wholeCalendarUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-1 block rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/70"
-                            onClick={() => setOpenCalendarMenuId(null)}
-                          >
-                            {t('events.addWholeCalendar')}
-                          </a>
-                        </div>
+                    <div className="hidden md:block w-px bg-border group-hover:bg-ghost transition-colors self-stretch" />
+
+                    <div className="flex-1">
+                      <h3 className="text-xl font-display font-medium mb-2 group-hover:text-ghost-bright transition-colors">
+                        {event.title}
+                      </h3>
+                      {event.description && (
+                        <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
+                          {event.description}
+                        </p>
                       )}
+                      <div className="relative mt-4 inline-block text-left" data-calendar-menu>
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-2 rounded-md border border-border/80 bg-card px-3 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-ghost hover:bg-muted/40"
+                          onClick={() =>
+                            setOpenCalendarMenuId((current) => (current === event.id ? null : event.id))
+                          }
+                          aria-haspopup="menu"
+                          aria-controls={`calendar-menu-${event.id}`}
+                          aria-expanded={openCalendarMenuId === event.id}
+                        >
+                          <CalendarPlus size={14} />
+                          {t('events.addToCalendar')}
+                        </button>
+
+                        {openCalendarMenuId === event.id && (
+                          <div
+                            id={`calendar-menu-${event.id}`}
+                            className="absolute left-0 top-full z-20 mt-2 min-w-56 max-w-[calc(100vw-2rem)] rounded-lg border border-border/80 bg-background/95 p-1.5 shadow-xl backdrop-blur"
+                          >
+                            <a
+                              href={getAddToCalendarUrl(event)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/70"
+                              onClick={() => setOpenCalendarMenuId(null)}
+                            >
+                              {t('events.addSingleEvent')}
+                            </a>
+                            <a
+                              href={wholeCalendarUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-1 block rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/70"
+                              onClick={() => setOpenCalendarMenuId(null)}
+                            >
+                              {t('events.addWholeCalendar')}
+                            </a>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
                 </article>
               );
             })}
